@@ -1,0 +1,32 @@
+.legal-dashboard {
+  min-height: 100vh;
+}
+
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.info-cards .card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-cards .card ul li {
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+  color: var(--text-dark);
+}
+
+.info-cards .card ul li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  font-weight: bold;
+  font-size: 20px;
+}
+

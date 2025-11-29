@@ -1,0 +1,81 @@
+.help-form-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  margin-top: 24px;
+}
+
+.help-form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.help-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.info-card h3 {
+  color: var(--primary-color);
+  margin-bottom: 16px;
+}
+
+.info-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-card ul li {
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+  color: var(--text-dark);
+}
+
+.info-card ul li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--success-color);
+  font-weight: bold;
+}
+
+.info-card.emergency {
+  background: linear-gradient(135deg, #FF6B9D, #C44569);
+  color: white;
+}
+
+.info-card.emergency h3 {
+  color: white;
+}
+
+.info-card.emergency p {
+  margin: 8px 0;
+}
+
+.emergency-number {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 12px 0 !important;
+}
+
+.form-actions {
+  margin-top: 24px;
+}
+
+@media (max-width: 968px) {
+  .help-form-container {
+    grid-template-columns: 1fr;
+  }
+}
+
