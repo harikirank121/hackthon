@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 import { authService } from '../services/authService';
 
@@ -10,8 +11,11 @@ export const AuthProvider = ({ children }) => {
   // On mount, check if user is stored
   useEffect(() => {
     try {
-      const storedUser = authService.getCurrentUser();
-      if (storedUser) setUser(storedUser);
+      const stored = authService.getStoredAuth();
+      if (stored?.token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${stored.token}`;
+      }
+      if (stored?.user) setUser(stored.user);
     } catch (error) {
       // Silently ignore
     }
@@ -20,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   // Login handler (supports reCAPTCHA)
   const login = async (email, password, captchaToken) => {
     try {
-      const userData = await authService.login(email, password, captchaToken);
+      const { user: userData } = await authService.login(email, password, captchaToken);
       setUser(userData);
       return { success: true, user: userData };
     } catch (error) {
@@ -28,10 +32,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Register handler (now supports reCAPTCHA)
+  // Register handler (supports reCAPTCHA)
   const register = async (userData, captchaToken) => {
     try {
-      const newUser = await authService.register(userData, captchaToken);
+      const { user: newUser } = await authService.register(userData, captchaToken);
       setUser(newUser);
       return { success: true, user: newUser };
     } catch (error) {
@@ -46,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

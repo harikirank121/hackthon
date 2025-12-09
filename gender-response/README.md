@@ -1,6 +1,6 @@
-# Gender-Responsive Domestic Violence Support Platform
+# SanjayaOS
 
-A comprehensive web application built with React, Vite, and modern web technologies to provide resources and support for people facing domestic violence.
+SanjayaOS — System Monitoring & Support Platform with guided assistance.
 
 ## Features
 

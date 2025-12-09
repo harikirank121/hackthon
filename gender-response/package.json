@@ -1,8 +1,9 @@
 {
-  "name": "gender-response-dv-app",
+  "name": "sanjaya-os",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "description": "SanjayaOS — System Monitoring & Support Platform",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
