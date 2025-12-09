@@ -35,7 +35,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         <Link to={getRoleRoute()} className="navbar-brand">
-          <h2>DV Support Platform</h2>
+          <h2>SANJAYA OS</h2>
         </Link>
         
         <div className="navbar-menu">
