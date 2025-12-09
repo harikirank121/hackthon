@@ -1,100 +1,67 @@
-// Authentication service with localStorage persistence
-const STORAGE_KEY = 'dv_support_users'
-const CURRENT_USER_KEY = 'dv_support_current_user'
+import axios from 'axios';
+
+const API_BASE = 'http://localhost:5000';
+const AUTH_STORAGE_KEY = 'dv_support_auth_user';
+
+const persistAuth = (payload) => {
+  try {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(payload));
+    if (payload?.token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${payload.token}`;
+    }
+  } catch (error) {
+    console.error('Error saving auth payload:', error);
+  }
+};
+
+const clearPersistedAuth = () => {
+  localStorage.removeItem(AUTH_STORAGE_KEY);
+  delete axios.defaults.headers.common['Authorization'];
+};
+
+const getStoredAuth = () => {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (error) {
+    console.error('Error reading stored auth:', error);
+    return null;
+  }
+};
 
 export const authService = {
-  // Get all users from storage
-  getUsers() {
-    try {
-      const users = localStorage.getItem(STORAGE_KEY)
-      return users ? JSON.parse(users) : []
-    } catch (error) {
-      console.error('Error getting users:', error)
-      return []
-    }
-  },
-
-  // Save users to storage
-  saveUsers(users) {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(users))
-    } catch (error) {
-      console.error('Error saving users:', error)
-    }
-  },
-
-  // Register new user, optionally with captchaToken
-  register(userData, captchaToken) {
-    // TODO: When using backend API, send captchaToken in the registration request and validate on backend.
-    return new Promise((resolve, reject) => {
-      if (!captchaToken) {
-        reject(new Error('CAPTCHA not verified'));
-        return;
-      }
-      const users = this.getUsers();
-      // Check if email already exists
-      if (users.find(u => u.email === userData.email)) {
-        reject(new Error('Email already registered'));
-        return;
-      }
-      const newUser = {
-        id: Date.now().toString(),
-        ...userData,
-        createdAt: new Date().toISOString(),
-        // Include captchaToken for backend (currently unused)
-        captchaToken,
-      };
-      users.push(newUser);
-      this.saveUsers(users);
-      // Auto-login after registration
-      this.setCurrentUser(newUser);
-      resolve(newUser);
+  async register(userData, captchaToken) {
+    const { data } = await axios.post(`${API_BASE}/auth/register`, {
+      ...userData,
+      captchaToken
     });
+    persistAuth(data);
+    return data;
   },
 
-  // Login user
-  login(email, password, captchaToken) {
-    // TODO: When switching to real backend, send captchaToken along with email/password to backend
-    return new Promise((resolve, reject) => {
-      const users = this.getUsers()
-      const user = users.find(u => u.email === email && u.password === password)
-      // For demo without real backend, we only emulate the CAPTCHA check:
-      if (!captchaToken) {
-        reject(new Error('CAPTCHA not verified'))
-        return
-      }
-      if (!user) {
-        reject(new Error('Invalid email or password'))
-        return
-      }
-      this.setCurrentUser(user)
-      resolve(user)
-    })
+  async login(email, password, captchaToken) {
+    const { data } = await axios.post(`${API_BASE}/auth/login`, {
+      email,
+      password,
+      captchaToken
+    });
+    persistAuth(data);
+    return data;
   },
 
-  // Get current user
   getCurrentUser() {
-    try {
-      const userStr = sessionStorage.getItem(CURRENT_USER_KEY)
-      return userStr ? JSON.parse(userStr) : null
-    } catch (error) {
-      console.error('Error getting current user:', error)
-      return null
-    }
+    const stored = getStoredAuth();
+    return stored?.user || null;
   },
 
-  // Set current user
-  setCurrentUser(user) {
-    try {
-      sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user))
-    } catch (error) {
-      console.error('Error setting current user:', error)
-    }
+  getToken() {
+    const stored = getStoredAuth();
+    return stored?.token || null;
   },
 
-  // Logout
+  getStoredAuth,
+
   logout() {
-    sessionStorage.removeItem(CURRENT_USER_KEY)
+    clearPersistedAuth();
   }
-}
-
+};
